@@ -15,7 +15,12 @@ ui <- fluidPage(
   sidebarLayout(
     sidebarPanel(
       HTML('<strong><big>Input</strong></big>'), hr(),
-      textAreaInput('seqs', label = NULL, placeholder = 'Enter names and sequences', height= '50vh')
+      textAreaInput('seqs', label = NULL, placeholder = 'Enter names and sequences', height= '50vh'),
+      HTML('<strong><big>Options</strong></big>'), hr(),
+      materialSwitch('remr', "Remove 'r' from RNA sequences", value = TRUE, status = 'primary'),
+      materialSwitch('remp', "Remove '+' from LNA sequences", value = TRUE, status = 'primary'),
+      materialSwitch('rems', "Remove '*' from phosphorothioate sequences", value = TRUE, status = 'primary'),
+      materialSwitch('remm', "Remove 'm' from 2'-O-methyl sequences", value = TRUE, status = 'primary')
     ),
     mainPanel(
       HTML('<br><strong><big>Output</strong></big>'), hr(),
