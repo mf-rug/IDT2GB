@@ -52,9 +52,10 @@ server <- function(input, output) {
           df_mods <- df_mods[,as.numeric(which(apply(df_mods,2, function(x) !all(str_detect(x, '^$')))))]
           df_out <- df_mods[,c('V1', 'seqs')]
           df_out$length <- str_count(df_out$seqs)
+          
+          #extract the 'pure' sequences
           seqs_single_char_as_mod <- gsub('/[^/]+/', '€', df$V2)
           if (any(str_detect(seqs_single_char_as_mod, '€'))) {
-            print('some mods found')
             
             #this calculates position of the mod by compensating for the extra char that is the modification
             #the first stays, but all others get subtracted by the number of mods that follow
@@ -67,6 +68,7 @@ server <- function(input, output) {
                 pos[[x]][which(pos[[x]] == max(pos[[x]]) & pos[[x]] != 1)] -1)
             } else { NULL })
             
+            #this adds the position and modification name name
             df_rest <- df_mods[which(!colnames(df_mods) %in% c('V1', 'seqs'))]
             for (i in 1:ncol(df_rest)) {
               df_out[,paste0('mod_', i)] <- df_rest[, i]
@@ -83,6 +85,7 @@ server <- function(input, output) {
     }
   })
   
+  #create the .gb format
   out_text <- eventReactive(processed(), {
     if (input$seqs != '') {
       if (!is.data.frame(processed())) {
@@ -130,6 +133,7 @@ ORIGIN
     }
   })
   
+  #gb for HTML preview
   output$outtext <- renderUI({
     out <- out_text()
     out <- str_replace_all(out, '\n', '<br/>')
@@ -138,12 +142,14 @@ ORIGIN
     HTML(paste0('<pre><tt>', paste(out, collapse = '<br/>'), '</tt></pre>'))
   })
   
+  # Table of all sequences
   output$outtable <- renderDataTable({
     if (is.data.frame(processed())) {
       processed()
     }
   })
   
+  #download the .gb
   output$downloadgb <- downloadHandler(
     filename = function() {
       paste("IDT2GB-", Sys.Date(), ".gb", sep="")
@@ -152,7 +158,11 @@ ORIGIN
       write_file(paste(out_text(), collapse = '\n'), file)
     })  
   
+  # copy .gb to clipboard
   output$clip <- renderUI({
-    rclipButton("clipbtn", HTML('<small><font color="grey">Copy .gb format to clipboard</font></small>'), paste(out_text(), collapse = '\n'), modal = FALSE, icon("copy"), )
+    rclipButton("clipbtn", 
+                HTML('<small><font color="grey">Copy .gb format to clipboard</font></small>'), 
+                paste(out_text(), collapse = '\n'), 
+                modal = FALSE, icon("copy"), )
   })
 }

@@ -10,7 +10,7 @@ library(rclipboard)
 
 ui <- fluidPage(
   useShinyjs(),
-  titlePanel(title = "IDT2GB"),
+  titlePanel(title = "IDT2gb"),
   rclipboardSetup(),
   sidebarLayout(
     sidebarPanel(
